@@ -5,13 +5,17 @@
     .module('tests')
     .controller('TestsModalFormController', TestsModalFormController);
 
-  TestsModalFormController.$inject = ['$scope', '$uibModalInstance', 'testsData', 'method'];
-  function TestsModalFormController($scope, $uibModalInstance, testsData, method) {
+  TestsModalFormController.$inject = ['$scope', '$uibModalInstance', 'testsData', 'method', '$timeout'];
+  function TestsModalFormController($scope, $uibModalInstance, testsData, method, $timeout) {
     var vm = this;
     vm.testsData = testsData;
     vm.method = method;
     vm.disabled = (method === 'view');
-
+    $timeout(function () {
+      $(document).ready(function() {
+        $('#summernote').summernote();
+      });
+    },200);
     //在这里处理要进行的操作
     vm.ok = function(isValid) {
       if (!isValid) {
