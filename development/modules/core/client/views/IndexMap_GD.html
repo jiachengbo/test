@@ -1,0 +1,2662 @@
+﻿ <!DOCTYPE html>
+<html>
+<head> 
+<!-- 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>Hello Map</title> 
+<script type="text/javascript"src="http://api.map.baidu.com/api?key=59db371659c04947a1ff044e80565718&v=1.4&services=true">
+</script>  
+<!--加载鼠标测距工具-->  
+<!--script src="DistanceTool_min.js" type="text/javascript"></script>-->
+<!--加载鼠标绘制工具-->  
+<!--script type="text/javascript" src="DrawingManager_min.js"></script>-->  
+<!-- <link rel="stylesheet" href="DrawingManager_min.css" />  
+-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+	body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=X14h6lgZx7qUsoNbPi49AGHc6hRtuqlO"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+	<script type="text/javascript" src="MarkerClusterer_min.js"></script>
+
+	<title>地图展示</title>
+</head>
+
+<body> 
+<!--<<div id="mouselng" style="visibility:hidden;display:none"></div>
+<div id="mouselat" style="visibility:hidden;display:none"></div> -->
+ 
+<div style="width:100%;height:100%;border:0px solId gray" id="container">
+
+ 
+</div>  
+	
+</body>
+</html>
+<script type="text/javascript">
+
+    var color = "red";
+	var color_yellow = "yellow";
+    var my_strokeWeight = 6;//线粗
+    var my_Opacity = 0; //地图覆盖物透明度
+    var map = new BMap.Map("container", {enableMapClick:false});
+    map.centerAndZoom(new BMap.Point(108.90444, 34.27480), 14);
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    map.enableScrollWheelZoom(); //启用地图滚轮放大缩小
+    var ctrl_nav = new BMap.NavigationControl({ anchor: BMAP_ANCHOR_TOP_LEFT, type: BMAP_NAVIGATION_CONTROL_LARGE });
+    map.addControl(ctrl_nav); //添加标准地图控件(左上角的放大缩小左右拖拽控件)
+
+
+	var v_personid;
+    var v_lhsyID;
+    var points = [];  // 添加海量点数据
+//    var points_myIcon = [];  // 添加海量点数据
+    var arr_marker = [];  // 添加海量点数据marker
+
+//    var arr_photo_path = [];
+//    var arr_Name = [];
+//    var arr_type = [];
+//    var arr_age =  [];
+//    var arr_pcase = [];
+//    var arr_pdemand = [];
+//    var arr_personid = [];
+    // 显示指定经纬度标记
+    function showPoint_LHSY(lon, lat, Name, tel, photo_path, road, river, toilet,estate, type_png_path,personid,lhsyID) {
+        // 引入 Table  zxf
+		v_personid = personid;
+        v_lhsyID = lhsyID;
+        var sContent = "<div>"
+         + "<img style='float:left;margin:4px' id='imgDemo' src='" + photo_path + "' width='180' height='200'/>"
+         + "<div style='width:295px; height:200px;overflow-y:scroll;'>"
+         + "<table  border='1'><tr><td width='100'> 姓名：</td><td width='200'> " + Name + "</td></tr>"
+         + "<tr><td width='100'> 电话</td><td width='200'> " + tel + "</td></tr>"
+         + "<tr><td width='100'> 包管道路</td><td width='200'> " + road + "</td></tr>"
+         + "<tr><td width='100'> 河道名称</td><td width='200'> " + river + "</td></tr>"
+         + "<tr><td width='100'> 厕所名称</td><td width='200'> " + toilet + "</td></tr>"
+         + "<tr><td width='100'> 小区名称</td><td width='200'> " + estate + "</td></tr>"
+		  + "<tr><td width='100'><input type='button' value='查看案件' onclick='say(&quot;"+Name+"&quot;)'> </td></tr>"
+            + "<tr><td width='100'><input type='button' value='查看管辖范围' onclick='say2(&quot;"+personid+"&quot;)'> </td></tr>"
+         + "</table>"
+         + " </div>"
+         + " </div>";
+
+        //创建小狐狸
+        var pt = new BMap.Point(lon, lat);
+        //alert(type_png_path);
+        var myIcon = new BMap.Icon(type_png_path, new BMap.Size(32, 32));
+        var marker = new BMap.Marker(pt, { icon: myIcon });  // 创建标注
+        map.addOverlay(marker);              // 将标注添加到地图中
+
+        //设置 marker 点击 弹框 大小 by xf
+        var opts = { width: 500, // 信息窗口宽度 
+            height: 200, // 信息窗口高度 
+            title: "" // 信息窗口标题
+        }
+
+        var infoWindow = new BMap.InfoWindow(sContent, opts);  // 创建信息窗口对象 zxf
+        map.addOverlay(marker);
+        marker.addEventListener("click", function () {
+            this.openInfoWindow(infoWindow);
+            //图片加载完毕重绘infowindow
+            document.getElementById('imgDemo').onload = function () {
+                infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+            }
+        });
+        map.enableScrollWheelZoom(true);
+        //map.panTo(new_point);         <input  type='button' value='查看案件' onclick='say('asfasf')'>       //转到该点位置
+    }
+
+        function say(str)
+       {
+
+	        var tnum=window.external.say(str);//getDebugPath()为c#方法
+       }
+    function say2(str)
+    {
+
+        var tnum=window.external.say2(str);//getDebugPath()为c#方法
+    }
+       function look(id)
+       {
+          //  alert(id);
+	        var tnum=window.external.look(id); // getDebugPath()为c#方法
+       }
+
+
+	  function showPoint_LHSY_mqdt(lon, lat,type_png_path,id) {
+		
+    
+        //创建小狐狸
+        var pt = new BMap.Point(lon, lat);
+        //alert(type_png_path);
+        var myIcon = new BMap.Icon(type_png_path, new BMap.Size(32, 32));
+        var marker = new BMap.Marker(pt, { icon: myIcon });  // 创建标注
+        map.addOverlay(marker);              // 将标注添加到地图中
+
+        map.addOverlay(marker);
+        marker.addEventListener("click", function () {
+            look(id);
+        });
+
+        map.enableScrollWheelZoom(true);
+        //map.panTo(new_point);         <input  type='button' value='查看案件' onclick='say('asfasf')'>       //转到该点位置
+    }
+    // 显示指定经纬度标记
+    function showPoint(lon, lat, Name, type, photo_path,age, pcase, pdemand, type_png_path,personid) {
+        // 引入 Table  zxf
+        var sContent = "<div>"
+         + "<img style='float:left;margin:4px' id='imgDemo' src='" + photo_path + "' width='180' height='200'/>"
+         +"<div style='width:295px; height:200px;overflow-y:scroll;'>"
+         + "<table  border='1'><tr><td width='100'> 姓名：</td><td width='200'> " + Name + "</td></tr>"
+         + "<tr><td width='100'> 类型</td><td width='200'> " + type + "</td></tr>"
+         +"<tr><td width='100'> 年龄</td><td width='200'> " + age + "</td></tr>"
+         +"<tr><td width='100'> 困难原因</td><td width='200'> " + pcase + "</td></tr>"
+         +"<tr><td width='100'> 困难需求</td><td width='200'> " + pdemand + "</td></tr>"
+		 + "<tr><td width='100'><input type='button' value='帮扶情况' onclick='say(&quot;"+personid+"&quot;)'> </td></tr>"
+         +"</table>"
+         +" </div>"
+         +" </div>";
+         
+        //创建小狐狸
+        var pt = new BMap.Point(lon, lat);
+        //alert(type_png_path);
+	    var myIcon = new BMap.Icon(type_png_path, new BMap.Size(32, 32));
+	    var marker = new BMap.Marker(pt,{icon:myIcon});  //
+        //设置 marker 点击 弹框 大小 by xf
+        var opts = { width : 500, // 信息窗口宽度
+                    height: 200, // 信息窗口高度
+                    title: "" // 信息窗口标题
+        }
+
+        var infoWindow = new BMap.InfoWindow(sContent, opts);  // 创建信息窗口对象 zxf
+       // var infoWindow = new BMap.InfoWindow(sContent, opts);  // 创建信息窗口对象 zxf
+	    //map.addOverlay(marker);
+	      marker.addEventListener("click", function(){
+	       this.openInfoWindow(infoWindow);
+	       //图片加载完毕重绘infowindow
+	       document.getElementById('imgDemo').onload = function (){
+		       infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+	       }
+	    });
+
+        arr_marker.push(marker);
+    }
+
+
+	function show_point_all()
+	{
+        var markerClusterer = new BMapLib.MarkerClusterer(map, {markers:arr_marker});
+//        if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
+//            var options = {
+//                size: BMAP_POINT_SIZE_SMALL,
+//                shape: BMAP_POINT_SHAPE_STAR,
+//                color: '#d340c3'
+//            }
+//
+//
+////            var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+////            pointCollection.addEventListener('click', function (e) {
+////                alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+////            });
+//            //map.addOverlay(markerClusterer);  // 添加Overlay
+//        } else {
+//            alert('请在chrome、safari、IE8+以上浏览器查看本功能!');
+//        }
+
+
+	}
+	function setCommunityName(str_CommunityName,lon,lat) {
+        var point = new BMap.Point(lon, lat);
+        var opts = {
+            position: point,    // 指定文本标注所在的地理位置
+            offset: new BMap.Size(10, 10)    //设置文本偏移量
+        }
+//        opts.position = map.getBounds().getCenter();
+        var label = new BMap.Label(str_CommunityName, opts);  // 创建文本标注对象
+        label.setStyle({
+            color: color,
+            backgroundColor: 'transparent', //文本背景色
+            borderColor: 'transparent', //文本框边框色
+            fontSize: "30px",
+            height: "30px",
+            lineHeight: "30px",
+            fontFamily: "微软雅黑"
+        });
+        map.addOverlay(label);  
+    }
+
+    function clear() {
+        //points.items.clear();
+		points = [];
+        map.clearOverlays();
+        map.enableScrollWheelZoom(true);
+
+    }
+    function getBoundary_3(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName,lon_1,lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_4(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,str_CommunityName
+                        ) {
+        //创建多边形数组
+        //alert("getBoundary 4");
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+ //       var polyline = new BMap.Polyline(arr_community_point, { strokeColor: "blue", strokeWeight: 6, strokeOpacity: 0.5 });
+ //       map.addOverlay(polyline);          //增加折线
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" }); //创建多边形
+        map.addOverlay(polygon); //        //增加多边形
+
+        map.setViewport(arr_community_point);    //调整视野
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+
+        map.enableScrollWheelZoom(true);
+    }
+    
+    function getBoundary_5(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_6(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野 
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_7(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,
+                        lon_7, lat_7,str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_8(lon_1,lat_1,
+                        lon_2,lat_2,
+                        lon_3,lat_3,
+                        lon_4,lat_4,
+                        lon_5,lat_5,
+                        lon_6,lat_6,
+                        lon_7,lat_7,
+                        lon_8,lat_8,str_CommunityName                  
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+            
+            if (lon_1 !="" )
+                    arr_community_point[0] = new BMap.Point(lon_1,lat_1);
+               
+            if (lon_2 !="" )
+                    arr_community_point[1] = new BMap.Point(lon_2,lat_2) ;          
+            
+            if (lon_3 !="" )
+                    arr_community_point[2] = new BMap.Point(lon_3,lat_3) ;
+            
+            if (lon_4 !="" )
+                    arr_community_point[3] = new BMap.Point(lon_4,lat_4);
+               
+            if (lon_5 !="") 
+                    arr_community_point[4] = new BMap.Point(lon_5,lat_5);
+               
+            if (lon_6 !="" )
+                    arr_community_point[5] = new BMap.Point(lon_6,lat_6);
+                
+            if (lon_7 !="") 
+                    arr_community_point[6] = new BMap.Point(lon_7,lat_7);
+                
+            if (lon_8 !="" )
+                    arr_community_point[7] = new BMap.Point(lon_8,lat_8);
+
+            var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+            map.addOverlay(polygon);           //增加多边形
+            map.setViewport(arr_community_point);    //调整视野  
+            setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_9(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,
+                        lon_7, lat_7,
+                        lon_8, lat_8,
+                        lon_9, lat_9, str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_10(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,
+                        lon_7, lat_7,
+                        lon_8, lat_8,
+                        lon_9, lat_9,
+                        lon_10, lat_10, str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_11(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,
+                        lon_7, lat_7,
+                        lon_8, lat_8,
+                        lon_9, lat_9,
+                        lon_10, lat_10,
+                        lon_11, lat_11, str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_12(lon_1, lat_1,
+                        lon_2, lat_2,
+                        lon_3, lat_3,
+                        lon_4, lat_4,
+                        lon_5, lat_5,
+                        lon_6, lat_6,
+                        lon_7, lat_7,
+                        lon_8, lat_8,
+                        lon_9, lat_9,
+                        lon_10, lat_10,
+                        lon_11, lat_11,
+                        lon_12,lat_12,
+                        str_CommunityName
+                        ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_13(lon_1, lat_1,
+                       lon_2, lat_2,
+                       lon_3, lat_3,
+                       lon_4, lat_4,
+                       lon_5, lat_5,
+                       lon_6, lat_6,
+                       lon_7, lat_7,
+                       lon_8, lat_8,
+                       lon_9, lat_9,
+                       lon_10, lat_10,
+                       lon_11, lat_11,
+                       lon_12, lat_12,
+                       lon_13, lat_13,
+                       str_CommunityName
+                       ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+
+    function getBoundary_14(lon_1, lat_1,
+                      lon_2, lat_2,
+                      lon_3, lat_3,
+                      lon_4, lat_4,
+                      lon_5, lat_5,
+                      lon_6, lat_6,
+                      lon_7, lat_7,
+                      lon_8, lat_8,
+                      lon_9, lat_9,
+                      lon_10, lat_10,
+                      lon_11, lat_11,
+                      lon_12, lat_12,
+                      lon_13, lat_13,
+                      lon_14, lat_14,
+                      str_CommunityName
+                      ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_15(lon_1, lat_1,
+                     lon_2, lat_2,
+                     lon_3, lat_3,
+                     lon_4, lat_4,
+                     lon_5, lat_5,
+                     lon_6, lat_6,
+                     lon_7, lat_7,
+                     lon_8, lat_8,
+                     lon_9, lat_9,
+                     lon_10, lat_10,
+                     lon_11, lat_11,
+                     lon_12, lat_12,
+                     lon_13, lat_13,
+                     lon_14, lat_14,
+                     lon_15, lat_15,
+                     str_CommunityName
+                     ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_16(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_17(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_18(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_19(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_20(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_21(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_22(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_23(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_24(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_25(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+
+    function getBoundary_26(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                       lon_26, lat_26,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+        if (lon_26 != "")
+            arr_community_point[25] = new BMap.Point(lon_26, lat_26);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+
+    function getBoundary_27(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                       lon_26, lat_26,
+                       lon_27, lat_27,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+        if (lon_26 != "")
+            arr_community_point[25] = new BMap.Point(lon_26, lat_26);
+        if (lon_27 != "")
+            arr_community_point[26] = new BMap.Point(lon_27, lat_27);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+    function getBoundary_28(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                       lon_26, lat_26,
+                       lon_27, lat_27,
+                       lon_28, lat_28,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+        if (lon_26 != "")
+            arr_community_point[25] = new BMap.Point(lon_26, lat_26);
+        if (lon_27 != "")
+            arr_community_point[26] = new BMap.Point(lon_27, lat_27);
+        if (lon_28 != "")
+            arr_community_point[27] = new BMap.Point(lon_28, lat_28);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_29(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                       lon_26, lat_26,
+                       lon_27, lat_27,
+                       lon_28, lat_28,
+                       lon_29, lat_29,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array()
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+        if (lon_26 != "")
+            arr_community_point[25] = new BMap.Point(lon_26, lat_26);
+        if (lon_27 != "")
+            arr_community_point[26] = new BMap.Point(lon_27, lat_27);
+        if (lon_28 != "")
+            arr_community_point[27] = new BMap.Point(lon_28, lat_28);
+        if (lon_29 != "")
+            arr_community_point[28] = new BMap.Point(lon_29, lat_29);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+    function getBoundary_30(lon_1, lat_1,
+                    lon_2, lat_2,
+                    lon_3, lat_3,
+                    lon_4, lat_4,
+                    lon_5, lat_5,
+                    lon_6, lat_6,
+                    lon_7, lat_7,
+                    lon_8, lat_8,
+                    lon_9, lat_9,
+                    lon_10, lat_10,
+                    lon_11, lat_11,
+                    lon_12, lat_12,
+                    lon_13, lat_13,
+                    lon_14, lat_14,
+                    lon_15, lat_15,
+                     lon_16, lat_16,
+                     lon_17, lat_17,
+                     lon_18, lat_18,
+                     lon_19, lat_19,
+                     lon_20, lat_20,
+                     lon_21, lat_21,
+                     lon_22, lat_22,
+                      lon_23, lat_23,
+                       lon_24, lat_24,
+                       lon_25, lat_25,
+                       lon_26, lat_26,
+                       lon_27, lat_27,
+                       lon_28, lat_28,
+                       lon_29, lat_29,
+                       lon_30, lat_30,
+                    str_CommunityName
+                    ) {
+        //创建多边形数组
+        var arr_community_point = new Array();
+
+        if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+        if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+        if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+
+        if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+
+        if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+
+        if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+
+        if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+
+        if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+        if (lon_13 != "")
+            arr_community_point[12] = new BMap.Point(lon_13, lat_13);
+        if (lon_14 != "")
+            arr_community_point[13] = new BMap.Point(lon_14, lat_14);
+        if (lon_15 != "")
+            arr_community_point[14] = new BMap.Point(lon_15, lat_15);
+        if (lon_16 != "")
+            arr_community_point[15] = new BMap.Point(lon_16, lat_16);
+        if (lon_17 != "")
+            arr_community_point[16] = new BMap.Point(lon_17, lat_17);
+        if (lon_18 != "")
+            arr_community_point[17] = new BMap.Point(lon_18, lat_18);
+        if (lon_19 != "")
+            arr_community_point[18] = new BMap.Point(lon_19, lat_19);
+        if (lon_20 != "")
+            arr_community_point[19] = new BMap.Point(lon_20, lat_20);
+        if (lon_21 != "")
+            arr_community_point[20] = new BMap.Point(lon_21, lat_21);
+        if (lon_22 != "")
+            arr_community_point[21] = new BMap.Point(lon_22, lat_22);
+        if (lon_23 != "")
+            arr_community_point[22] = new BMap.Point(lon_23, lat_23);
+        if (lon_24 != "")
+            arr_community_point[23] = new BMap.Point(lon_24, lat_24);
+        if (lon_25 != "")
+            arr_community_point[24] = new BMap.Point(lon_25, lat_25);
+        if (lon_26 != "")
+            arr_community_point[25] = new BMap.Point(lon_26, lat_26);
+        if (lon_27 != "")
+            arr_community_point[26] = new BMap.Point(lon_27, lat_27);
+        if (lon_28 != "")
+            arr_community_point[27] = new BMap.Point(lon_28, lat_28);
+        if (lon_29 != "")
+            arr_community_point[28] = new BMap.Point(lon_29, lat_29);
+        if (lon_30 != "")
+            arr_community_point[29] = new BMap.Point(lon_30, lat_30);
+
+        var polygon = new BMap.Polygon(arr_community_point, { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });  //创建多边形
+        map.addOverlay(polygon);           //增加多边形
+        map.setViewport(arr_community_point);    //调整视野  
+        setCommunityName(str_CommunityName, lon_1, lat_1);
+        map.enableScrollWheelZoom(true);
+    }
+
+
+
+	function show_js_LHSY_person(str_id)
+	{
+		
+		var tnum=window.external.show_js_LHSY_person(str_id); // getDebugPath()为c#方法
+	}
+	//已下方法满足路长河长地图显示
+	var LHSY_ID;
+	var LHSY_NAME;
+	function show_line_2(lon_1, lat_1,
+                    lon_2, lat_2,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+
+
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_3(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+
+
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_4(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_5(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_6(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_7(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_8(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					lon_8, lat_8,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_9(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					lon_8, lat_8,
+					lon_9, lat_9,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+		if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_10(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					lon_8, lat_8,
+					lon_9, lat_9,
+					lon_10, lat_10,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+		if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+		if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_11(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					lon_8, lat_8,
+					lon_9, lat_9,
+					lon_10, lat_10,
+					lon_11, lat_11,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+		if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+		if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+	function show_line_12(lon_1, lat_1,
+                    lon_2, lat_2,
+					lon_3, lat_3,
+					lon_4, lat_4,
+					lon_5, lat_5,
+					lon_6, lat_6,
+					lon_7, lat_7,
+					lon_8, lat_8,
+					lon_9, lat_9,
+					lon_10, lat_10,
+					lon_11, lat_11,
+					lon_12, lat_12,
+					str_id,str_name)
+	{
+		//创建多边形数组
+        var arr_community_point = new Array();
+		if (lon_1 != "")
+            arr_community_point[0] = new BMap.Point(lon_1, lat_1);
+        if (lon_2 != "")
+            arr_community_point[1] = new BMap.Point(lon_2, lat_2);
+		if (lon_3 != "")
+            arr_community_point[2] = new BMap.Point(lon_3, lat_3);
+		if (lon_4 != "")
+            arr_community_point[3] = new BMap.Point(lon_4, lat_4);
+        if (lon_5 != "")
+            arr_community_point[4] = new BMap.Point(lon_5, lat_5);
+		if (lon_6 != "")
+            arr_community_point[5] = new BMap.Point(lon_6, lat_6);
+		if (lon_7 != "")
+            arr_community_point[6] = new BMap.Point(lon_7, lat_7);
+        if (lon_8 != "")
+            arr_community_point[7] = new BMap.Point(lon_8, lat_8);
+		if (lon_9 != "")
+            arr_community_point[8] = new BMap.Point(lon_9, lat_9);
+		if (lon_10 != "")
+            arr_community_point[9] = new BMap.Point(lon_10, lat_10);
+        if (lon_11 != "")
+            arr_community_point[10] = new BMap.Point(lon_11, lat_11);
+		if (lon_12 != "")
+            arr_community_point[11] = new BMap.Point(lon_12, lat_12);
+
+
+
+		LHSY_ID = str_id;
+		LHSY_NAME = str_name;
+		var polyline = new BMap.Polyline(arr_community_point, {strokeColor:color, strokeWeight:my_strokeWeight, strokeOpacity:my_Opacity});  
+		polyline.addEventListener("click",function(){show_js_LHSY_person(str_id)} );
+        map.addOverlay(polyline);           //增加多边形
+        setCommunityName(str_name, lon_1, lat_1);
+	}
+
+
+
+
+    function getBoundary(str_community) {
+       // alert("getBoundary 1");
+    		var bdary = new BMap.Boundary();
+    		bdary.get("西安市莲湖区", function (rs) {       //获取行政区域
+    		    //map.clearOverlays();        //清除地图覆盖物       
+    		    var count = rs.boundaries.length; //行政区域的点有多少个
+    		    if (count === 0) {
+    		        alert('未能获取当前输入行政区域');
+    		        return;
+    		    }
+    		    var pointArray = [];
+    		    for (var i = 0; i < count; i++) {
+    		        var ply = new BMap.Polygon(rs.boundaries[i], { strokeColor: color, strokeWeight: my_strokeWeight, strokeOpacity: my_strokeWeight, fillOpacity: 0.0, fillColor: "none" });
+    		        // var ply = new BMap.Polygon(rs.boundaries[i], { strokeColor: "blue", strokeWeight: my_strokeWeight, strokeOpacity: my_Opacity });  //创建多边形
+    		        // var ply = new BMap.Polygon(rs.boundaries[i], { strokeWeight: my_strokeWeight, strokeOpacity: my_Opacity,strokeColor: "#ff0000" }); //建立多边形覆盖物
+    		        map.addOverlay(ply);  //添加覆盖物
+    		        pointArray = pointArray.concat(ply.getPath());
+    		    }
+    		    map.setViewport(pointArray);    //调整视野  
+    		    //addlabel();               
+    		});
+               map.enableScrollWheelZoom(true);
+    	}
+//    	setTimeout(function(){
+//    		getBoundary();
+//    	}, 2000);	
+
+
+	function addlabel() {
+	    var pointArray = [
+	      new BMap.Point(121.716076,23.703799),
+	      new BMap.Point(112.121885,14.570616),
+	      new BMap.Point(123.776573,25.695422)];
+	    var optsArray = [{},{},{}];
+	    var labelArray = [];
+	    var contentArray = [
+	      "台湾是中国的！",
+	      "南海是中国的！",
+	      "钓鱼岛是中国的！"];
+	    for(var i = 0;i < pointArray.length; i++) {
+	      optsArray[i].position = pointArray[i];
+	      labelArray[i] = new BMap.Label(contentArray[i],optsArray[i]);
+	      labelArray[i].setStyle({
+			color : "red",
+			fontSize : "12px",
+				 height : "20px",
+				 lineHeight : "20px",
+				 fontFamily:"微软雅黑"
+			 });
+	      map.addOverlay(labelArray[i]);
+	  }
+	  map.enableScrollWheelZoom(true);
+	}
+
+</script>
+

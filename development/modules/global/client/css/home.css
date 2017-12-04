@@ -1,0 +1,628 @@
+.view-backgroupd {
+    position: relative;
+    margin-left: -15px;
+    margin-right: -15px;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/*.home-view {*/
+    /*!*	position: relative;*/
+        /*padding-left: 0;*/
+        /*padding-right: 0;*/
+        /*margin-left: -15px;*/
+        /*margin-right: 0px;*/
+        /*margin-top: -50px;*/
+        /*width: 110%;*/
+        /*z-index: 2000;*/
+    /**!*/
+    /*!*background: url("/modules/global/client/img/images/bg.png");*!*/
+	/*!*background-size: 100% 100%;*!*/
+/*}*/
+
+.padding-top {
+    padding-top: 20px;
+}
+
+@keyframes itemMove1 {
+    from {
+        bottom: 40%;
+    }
+    to {
+        bottom: 60%;
+    }
+}
+
+@keyframes itemMove2 {
+    from {
+        bottom: 30%;
+    }
+    to {
+        bottom: 77%;
+    }
+}
+
+@keyframes itemMove3 {
+    from {
+        bottom: 17%;
+    }
+    to {
+        bottom: 67%;
+    }
+}
+
+@keyframes itemMove4 {
+    from {
+        bottom: 40%;
+    }
+    to {
+        bottom: 77%;
+    }
+}
+
+@keyframes itemMove5 {
+    from {
+        bottom: 34%;
+    }
+    to {
+        bottom: 69%;
+    }
+}
+
+@keyframes itemMove6 {
+    from {
+        bottom: 47%;
+    }
+    to {
+        bottom: 77%;
+    }
+}
+
+@keyframes itemMove7 {
+    from {
+        bottom: 42%;
+    }
+    to {
+        bottom: 72%;
+    }
+}
+
+@keyframes itemMove8 {
+    from {
+        bottom: 25%;
+    }
+    to {
+        bottom: 60%;
+    }
+}
+
+@keyframes lineMove1 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 20%;
+    }
+}
+
+@keyframes lineMove2 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 47%;
+    }
+}
+
+@keyframes lineMove3 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 50%;
+    }
+}
+
+@keyframes lineMove4 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 37%;
+    }
+}
+
+@keyframes lineMove5 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 35%;
+    }
+}
+
+@keyframes lineMove6 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 30%;
+    }
+}
+
+@keyframes lineMove7 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 30%;
+    }
+}
+
+@keyframes lineMove8 {
+    from {
+        height: 0;
+    }
+    to {
+        height: 35%;
+    }
+}
+@keyframes fontMove {
+    from {
+        bottom: 0;
+    }
+    to {
+        bottom: 60%;
+    }
+}
+.one .img:hover{
+    background:url(/modules/global/client/img/images/11.png)!important;
+}
+.two .img:hover{
+    background:url(/modules/global/client/img/images/22.png)!important;
+}
+.three .img:hover{
+    background:url(/modules/global/client/img/images/33.png)!important;
+}
+.four .img:hover{
+    background:url(/modules/global/client/img/images/44.png)!important;
+}
+.five .img:hover{
+    background:url(/modules/global/client/img/images/55.png)!important;
+}
+.six .img:hover{
+    background:url(/modules/global/client/img/images/66.png)!important;
+}
+.seven .img:hover{
+    background:url(/modules/global/client/img/images/77.png)!important;
+}
+.eight .img:hover{
+    background:url(/modules/global/client/img/images/88.png)!important;
+}
+@media screen and (min-width: 750px) {
+    .item .img {
+        text-align: center;
+    }
+    .text {
+        display: block;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .item-index {
+        width: 200px;
+        height: 60px;
+        position: absolute;
+        bottom: -40px;
+    }
+    .one {
+        left: 0.8%;
+        bottom: 60%;
+        animation: itemMove1 2s;
+        -webkit-animation: itemMove1 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .two {
+        left: 13.3%;
+        bottom: 77%;
+        animation: itemMove2 2s;
+        -webkit-animation: itemMove2 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .three {
+        left: 25.8%;
+        bottom: 67%;
+        animation: itemMove3 2s;
+        -webkit-animation: itemMove3 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .four {
+        left: 38.5%;
+        bottom: 77%;
+        animation: itemMove4 2s;
+        -webkit-animation: itemMove4 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .five {
+        left: 51.0%;
+        bottom: 69%;
+        animation: itemMove5 2s;
+        -webkit-animation: itemMove5 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .six {
+        left: 62.4%;
+        bottom: 77%;
+        animation: itemMove6 2s;
+        -webkit-animation: itemMove6 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .seven {
+        left: 74.3%;
+        bottom: 72%;
+        animation: itemMove7 2s;
+        -webkit-animation: itemMove7 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .eight {
+        left: 82.0%;
+        bottom: 60%;
+        animation: itemMove8 2s;
+        -webkit-animation: itemMove8 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line {
+        width: 2px;
+        background-color: #fff;
+        opacity: 0.5;
+        box-shadow: 0 0 2px 1px #eee;
+        /*bottom: 0;*/
+    }
+
+    /*.line:nth-child(odd){*/
+    /*bottom: 200px;*/
+    /*}*/
+    /*.line:nth-child(even){*/
+    /*bottom: 0;*/
+    /*}*/
+    .line1 {
+        bottom: 40%;
+        height: 20%;
+        position: absolute;
+        left: 0.6%;
+        animation: lineMove1 2s;
+        -webkit-animation: lineMove1 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line2 {
+        bottom: 30%;
+        position: absolute;
+        left: 13.1%;
+        height: 47%;
+        animation: lineMove2 2s;
+        -webkit-animation: lineMove2 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line3 {
+        bottom: 17%;
+        position: absolute;
+        left: 25.5%;
+        height: 50%;
+        animation: lineMove3 2s;
+        -webkit-animation: lineMove3 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line4 {
+        bottom: 40%;
+        position: absolute;
+        left: 38.3%;
+        height: 37%;
+        animation: lineMove4 2s;
+        -webkit-animation: lineMove4 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line5 {
+        bottom: 34%;
+        position: absolute;
+        left: 50.7%;
+        height: 35%;
+        animation: lineMove5 2s;
+        -webkit-animation: lineMove5 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line6 {
+        bottom: 47%;
+        position: absolute;
+        left: 62.2%;
+        height: 30%;
+        animation: lineMove6 2s;
+        -webkit-animation: lineMove6 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line7 {
+        bottom: 42%;
+        position: absolute;
+        left: 74.2%;
+        height: 30%;
+        animation: lineMove7 2s;
+        -webkit-animation: lineMove7 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .line8 {
+        bottom: 25%;
+        position: absolute;
+        left: 81.9%;
+        height: 35%;
+        animation: lineMove8 2s;
+        -webkit-animation: lineMove8 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle {
+        width: 10px;
+        height: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 2px 2px #eee;
+        position: absolute;
+        border-radius: 50%;
+    }
+
+    .circle1 {
+        left: 0.4%;
+        bottom: 60%;
+        animation: itemMove1 2s;
+        -webkit-animation: itemMove1 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle2 {
+        left: 12.9%;
+        bottom: 77%;
+        animation: itemMove2 2s;
+        -webkit-animation: itemMove2 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle3 {
+        left: 25.4%;
+        bottom: 67%;
+        animation: itemMove3 2s;
+        -webkit-animation: itemMove3 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle4 {
+        left: 38.0%;
+        bottom: 77%;
+        animation: itemMove4 2s;
+        -webkit-animation: itemMove4 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle5 {
+        left: 50.5%;
+        bottom: 69%;
+        animation: itemMove5 2s;
+        -webkit-animation: itemMove5 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle6 {
+        left: 62.0%;
+        bottom: 77%;
+        animation: itemMove6 2s;
+        -webkit-animation: itemMove6 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle7 {
+        left: 74.0%;
+        bottom: 72%;
+        animation: itemMove7 2s;
+        -webkit-animation: itemMove7 linear 2s; /* Safari 与 Chrome */
+    }
+
+    .circle8 {
+        left: 81.6%;
+        bottom: 60%;
+        animation: itemMove8 2s;
+        -webkit-animation: itemMove8 linear 2s; /* Safari 与 Chrome */
+    }
+    .fontbox {
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        bottom: 60%;
+        left: 0;
+        animation: fontMove 2s;
+        -webkit-animation: fontMove linear 2s; /* Safari 与 Chrome */
+    }
+    .fontbox span{
+        display: none;
+    }
+    .fontbox img{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .item-index{
+        display: block;
+        padding-left: 50px;
+        padding-top: 5px;
+        /*text-align: center;*/
+    }
+    body{
+        overflow: hidden;
+    }
+    .fontbox{
+        text-align: center;
+        line-height: 100px;
+        font-size: 20px;
+        color: wheat;
+    }
+    .fontbox img{
+        display: none;
+    }
+    .navbar-right li{
+        padding-right: 0!important;
+        margin-right: 5px!important;
+    }
+    .navbar-right li a{
+        padding-left: 0!important;
+        padding-right: 0!important;
+        margin-right: 0!important;
+    }
+    .navbar-brand{
+        margin-right: 0!important;
+    }
+}
+.shouyeshang{
+	width: 100%;
+	height: 48%;
+	margin-top: 20px;
+	padding: 0 20px;
+	/*background-color: #FFFAE6;*/
+	display: flex;
+	justify-content:center;
+}
+.shouyexia{
+	width: 100%;
+	height: 48%;
+	margin-top: 20px;
+	padding: 0 20px;
+	/*background-color: aquamarine;*/
+	display: flex;
+	justify-content:center;
+}
+.shouyeshang>div{
+	height: 100%;
+	width: 32%;
+	float: left;
+	/*border: 1px solid #000000;*/
+}
+.shouyeshang>div:nth-of-type(2){
+	margin: 0 20px;
+}
+.shouyexia>div{
+	height: 100%;
+	float: left;
+	/*border: 1px solid #000000;*/
+}
+.shouyexia>div:nth-of-type(1){
+	width: 64%;
+	margin-right: 20px;
+	padding-right: 20px;
+	box-sizing: content-box;
+}
+.shouyexia>div:nth-of-type(2){
+	width: 32%;
+}
+.partygk,.partywj{
+	overflow: hidden;
+}
+.partyjc{
+	background: url("/modules/global/client/img/home/基层党建.png") no-repeat;
+	background-size: 100% 100%;
+}
+.banzicy ul,.wentuhd ul{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+.banzicy ul li{
+	float: left;
+}
+.wentuhd ul li {
+	float: left;
+	width: 20%;
+}
+.wentuhd ul li.first{
+	width: 75%;
+}
+.wentuhd ul li.first img{
+	width: 100%;
+	height: 100%;
+}
+.wentuhd ul li img{
+	height: 100%;
+}
+.wentuhd ul li:not(.first){
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
+.wentuhdleft{
+	width: 44%;
+	height: 87%;
+	overflow: hidden;
+}
+.wentuhdleft ul li{
+	height: 30%;
+}
+.wentuhdleft ul,.wentuhdleft ul li.first{
+	height: 100%;
+}
+.wentuhdright{
+	width: 50%;
+	height: 87%;
+	overflow: hidden;
+}
+.nr{
+	height: 85%;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+/*.dier{*/
+	/*margin: 0 20px;*/
+/*}*/
+/*.dier1{*/
+	/*margin-right: 20px;*/
+/*}*/
+.zhonglou{
+	display: flex;
+	justify-content: space-around;
+	height: 87%;
+}
+.banzicy ul{
+	display: flex;
+	justify-content: space-around;
+	align-items:flex-start;
+	flex-wrap:wrap;
+}
+.banzicy ul li{
+	width: 22%;
+	height: 43%;
+}
+.banzicy ul li img{
+	width: 100%;
+	height: 100%;
+}
+.zhonglou h4{
+	text-align: center;
+	font-size: 13px;
+	margin-top: 5px;
+	margin-bottom: 0;
+}
+.patitle{
+	overflow: hidden;
+	height: 10%;
+	margin: 10px;
+	border-bottom: 2px solid red;
+}
+.patitle i{
+	display: inline-block;
+	vertical-align: top;
+	width: 25px;
+	height: 25px;
+	background:url("/modules/global/client/img/home/党徽11.png");
+}
+.patitle span{
+	display: inline-block;
+	text-align: center;
+	width: 90px;
+	height: 25px;
+	font-size: 16px;
+	line-height: 25px;
+}
+.patitle a:nth-of-type(1) span{
+	color: red;
+}

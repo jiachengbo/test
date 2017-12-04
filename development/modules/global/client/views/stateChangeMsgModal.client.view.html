@@ -1,0 +1,19 @@
+<div class="statechanged-modal">
+  <div class="modal-header">
+    <h4>你有以下{{vm.data.length}}条未读消息</h4>
+  </div>
+  <div class="modal-body">
+    <ul class="list-group" style="overflow-y: auto;max-height: 200px;">
+      <li class="list-group-item" ng-repeat="v in vm.data">
+        <span>案件ID：{{v.msgrecv.torec.id}}</span>
+        <span>消息内容：'{{v.msgrecv.desc}}'</span>
+        <span>接收时间：{{v.lastrecv_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="modal-footer" style="text-align: right">
+    <div class="btn-group" role="group" aria-label="..." ng-click="vm.close()">
+      <button type="button" class="btn btn-default">关闭</button>
+    </div>
+  </div>
+</div>

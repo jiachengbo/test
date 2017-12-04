@@ -1,0 +1,16 @@
+<style>
+  .fotter{
+    height: 50px;
+    background: url("/modules/core/client/img/header/footer.png") no-repeat 0 0;
+    background-size: 100% 100%;
+  }
+  .navbar-header{
+    height: 50px;
+    line-height: 50px;
+  }
+</style>
+<div class="container-fluid fotter" ng-controller="FooterController as vm">
+  <div class="navbar-header copy-right">
+    {{vm.copyRight}}&copy版权所有
+  </div>
+</div>

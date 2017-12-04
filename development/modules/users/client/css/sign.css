@@ -1,0 +1,60 @@
+.signin-view {
+/*	position: relative;
+	padding-left: 0;
+	padding-right: 0;
+	margin-left: -15px;
+	margin-right: 0px;
+	margin-top: -50px;
+	width: 110%;
+	z-index: 2000;
+*/
+	background-image: url("/modules/users/client/img/sign-bg.png");
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.signin-view h1 {
+	color: #fff;
+}
+
+.signin-form {
+	background-color: #ededed;
+	padding-left: 35px;
+	padding-right: 35px;
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+
+.signin-form .signin-btn {
+	margin-top: 30px;
+	width: 60%;
+}
+
+.signin-form h3 {
+	color: #1f64a7;
+	font-size: 24px;
+	margin-top: 50px;
+}
+
+.signin-form h5 {
+	color: #c0c1c6;
+	padding-top: 5px;
+}
+
+.signin-form .input-group {
+	height: 40px;
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
+
+.signin-form .signin-span {
+	top: 0;
+	border-right: none;
+	width: 80px;
+}
+
+.signin-form .signin-input {
+	display: block;
+	height: 40px;
+}
