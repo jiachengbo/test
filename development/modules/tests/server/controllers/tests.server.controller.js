@@ -6,6 +6,9 @@
 var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   sequelize = require(path.resolve('./config/lib/sequelize')),
+  util = require('util'),
+  config = require(path.resolve('./config/config')),
+  child_process = require('child_process'),
   logger = require(path.resolve('./config/lib/logger')).getLogger_FileNameBase(__filename);
 
 /**
@@ -89,7 +92,17 @@ exports.delete = function (req, res) {
 exports.list = function (req, res) {
   var Tests = sequelize.model('Tests');
   // var User = sequelize.model('User');
-
+// console.log( util);
+  var cmdLine = util.format('copy %s %s',
+    'D:\\贾兰\\*','D:\\c盘');
+  console.log(cmdLine);
+  child_process.exec(cmdLine, function (error, stdout, stderr) {
+    if (error) {
+      console.error(error);
+      return;
+    }
+    console.log(stdout);
+  });
   Tests.findAll({
     /*include: [
       {

@@ -22,6 +22,7 @@
         templateUrl: '/modules/tests/client/views/tests-modal-form.client.view.html',
         controller: 'TestsModalFormController',
         controllerAs: 'vm',
+        size: 'lg',
         backdrop: 'static',
         resolve: resarg
       });
@@ -185,6 +186,7 @@
 
     //取后台Tests表所有数据
     TestsService.query().$promise.then(function(data) {
+      console.log(data[1].content);
       vm.gridOptions.data = vm.tableData = data;
     });
   }

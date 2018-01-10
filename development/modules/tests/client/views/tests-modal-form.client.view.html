@@ -14,12 +14,14 @@
         </div>
         <div class="form-group">
           <label class="control-label" for="content">Content</label>
-          <textarea name="content" data-ng-model="vm.testsData.content" id="content" class="form-control" cols="30" rows="10" placeholder="Content"></textarea>
-          <div id="summernote"><p>Hello Summernote ,<b>Hello jQuery插件库</b></p></div>
+          <!--<textarea name="content" data-ng-model="vm.testsData.content" id="content" class="form-control" cols="30" rows="10" placeholder="Content"></textarea>-->
+          <!--<div ng-include="'/lib/AAAS/Noname1.html'"></div>-->
+          <!--<div id="summernote" style="width: 100%;min-height: 200px;"><p>Hello Summernote ,<b>Hello jQuery插件库</b></p></div>-->
         </div>
       </fieldset>
     </form>
   </div>
+  <iframe src="/lib/AAAS/Noname1.html" style="width: 100%;min-height: 500px;" id="ifrmae"></iframe>
   <div class="modal-footer">
     <button class="btn btn-primary" ng-if="!vm.disabled" ng-click="vm.ok(vm.testsForm.$valid)">OK</button>
     <button class="btn btn-warning" ng-click="vm.cancel()">Cancel</button>
